@@ -12,4 +12,28 @@ return array(
             'class' => 'console\components\LConsoleErrorHandler',
         ],
     ],
+    'params' => [
+        'CLog' => [
+            'queue' => 'queue_logs',
+            'exchange' => 'logstash',
+            'routing' => 'logs'
+        ],
+        'CMail' => [
+            'queue' => 'queue_mail',
+            'exchange' => 'async',
+            'routing' => 'mail'
+        ],
+        'CTicket' => [
+            'queue' => 'queue_ticket',
+            'exchange' => 'async',
+            'routing' => 'ticket'
+        ],
+        'DTicket' => [
+            'queue' => 'queue_delay_ticket',
+            'exchange' => 'delay',
+            'routing' => 'delay_ticket',
+            'x_exchange' => 'async',
+            'x_routing' => 'ticket'
+        ],
+    ],
 );

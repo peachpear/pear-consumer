@@ -1,6 +1,12 @@
 # pear-api
 pear让你更畅快地编程。pear-consumer是以pear-api为基础，增加消费者必要服务，重整为支持队列消费服务的项目。
 
+### 前提准备
+
+必要服务支持：Mysql、Nginx、php-fpm、Redis、Kafka、RabbitMQ
+
+可选服务支持：Elasticsearch、Kibana、Jenkins
+
 ### 使用说明
 
 ```
@@ -8,43 +14,37 @@ cd /yourProjectParentPath
 
 composer create-project peachpear/pear-consumer yourProjectName
 
-cd /path/yourProjectName/backend/config
+cd /path/yourProjectName/console/config
 
 ln -sf dev.php main.php
 ```
 
-nginx 配置
+### 运行示例
 ```
-server {
-    charset utf-8;
-    client_max_body_size 128M;
+cd /path/yourProjectName/public
 
-    listen 80; ## listen for ipv4
-    #listen [::]:80 default_server ipv6only=on; ## listen for ipv6
+// log队列消费者开始运行
+php yii consumer/start log
 
-    server_name yourServerName;
-    root        /path/yourProjectName/public;
-    index       index.php;
+// mail队列消费者开始运行
+php yii consumer/start mail
 
-    location / {
-        # Redirect everything that isn't a real file to index.php
-        try_files $uri $uri/ /index.php?$args;
-    }
+// ticket队列消费者开始运行
+php yii consumer/start ticket
 
-    location ~ \.php$ {
-        include fastcgi.conf;
-        fastcgi_pass   127.0.0.1:9000;
-        #fastcgi_pass unix:/var/run/php5-fpm.sock;
-        try_files $uri =404;
-    }
+// ticket队列消费者停止运行
+php yii consumer/stop ticket
 
-    #error_page 404 /404.html;
+// ticket队列消费者重启运行
+php yii consumer/restart ticket
 
-    location ~ /\.(ht|svn|git) {
-        deny all;
-    }
-}
+// ticket延迟队列消费者开始运行
+php yii delay/start ticket
 ```
+
+#### 特别说明
+其实，这个项目中最核心的就是AMQP连接RabbitMQ那一段代码，完全可以不使用框架。
+之所以借用Yii2框架，就是为了方便使用日志功能，日志这一块可以注意下。
 
 #### 目录结构
 ```

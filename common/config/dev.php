@@ -29,7 +29,12 @@ $commonConfig = array(
             ]
         ],
     ],
-    'params' => [],
+    'params' => [
+        'ticket' => [
+            'api_url' => 'http://dev.demo.com',
+            'api_secret' => 'devf6bcd4341d373cade4e832456b4f7',
+        ],
+    ],
     "configService" => [
         "filePath" => "/config/dev/",
         "fileExt" => "json",

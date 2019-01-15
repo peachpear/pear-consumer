@@ -29,7 +29,12 @@ $commonConfig = array(
             ]
         ],
     ],
-    'params' => [],
+    'params' => [
+        'ticket' => [
+            'api_url' => 'http://pre.demo.com',
+            'api_secret' => 'pref6bcd4341d373cade4e832456b4f7',
+        ],
+    ],
     "configService" => [
         "filePath" => "/config/pre/",
         "fileExt" => "json",

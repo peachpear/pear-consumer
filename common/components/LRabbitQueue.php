@@ -12,7 +12,7 @@ class LRabbitQueue extends Component
 {
     const LOG_PREFIX = 'common.components.LRabbitQueue.';
     private $connection;
-    public $credentials;
+    public $credentials;  // component初始化时会根据config自动赋值，无需init重复赋值
 
     public function init()
     {

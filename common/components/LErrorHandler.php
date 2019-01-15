@@ -24,6 +24,59 @@ class LErrorHandler extends ErrorHandler
     }
 
     /**
+     * 错误处理
+     */
+    public function handleError($code, $message, $file, $line)
+    {
+        /** @var $app Application */
+        $app = Yii::$app;
+        /** @var $controller LController */
+        $controller = $app->controller;
+
+        if (!$controller instanceof LController) {
+            $controller = $app->createController('/site');
+            $controller = $controller[0];
+        }
+
+        $exception =  new \ErrorException($message, $code, 1, $file, $line);
+
+        $this->logException($exception);
+
+        if (YII_DEBUG) {
+            throw $exception;
+        }
+
+        $data = ["msg" => "file:".$file.",line:".$line];
+
+        $controller->ajaxReturn(
+            LError::INTERNAL_ERROR,
+            YII_DEBUG ? $message : array(),
+            YII_DEBUG ? $data : array()
+        );
+    }
+
+    /**
+     * 致命错误处理
+     */
+    public function handleFatalError()
+    {
+        $error = error_get_last();
+        if (LException::isFatalError($error)) {
+            $exception = new \ErrorException($error['message'], 500, $error['type'], $error['file'], $error['line']);
+            $this->exception = $exception;
+            $this->logException($exception);
+
+            if ($this->discardExistingOutput) {
+                $this->clearOutput();
+            }
+            // need to explicitly flush logs because exit() next will terminate the app immediately
+            Yii::getLogger()->flush(true);
+
+            $this->handleException($exception);
+        }
+    }
+
+    /**
      * 异常处理
      * $data['code'] ? $data['code'] : 500
      * @param $exception
@@ -53,38 +106,6 @@ class LErrorHandler extends ErrorHandler
         $controller->ajaxReturn(
             (isset($data['errorCode']) ? $data['errorCode'] : $data['code']) ? $data['code'] : 500,
             YII_DEBUG ? $data['message'] : array(),
-            YII_DEBUG ? $data : array()
-        );
-	}
-
-    /**
-     * 错误处理
-     */
-	public function handleError($code, $message, $file, $line)
-	{
-        /** @var $app Application */
-        $app = Yii::$app;
-        /** @var $controller LController */
-        $controller = $app->controller;
-
-        if (!$controller instanceof LController) {
-            $controller = $app->createController('/site');
-            $controller = $controller[0];
-        }
-
-        $exception =  new \ErrorException($message, $code, 1, $file, $line);
-
-        $this->logException($exception);
-
-        if (YII_DEBUG) {
-            throw $exception;
-        }
-
-        $data = ["msg" => "file:".$file.",line:".$line];
-
-        $controller->ajaxReturn(
-            LError::INTERNAL_ERROR,
-            YII_DEBUG ? $message : array(),
             YII_DEBUG ? $data : array()
         );
 	}
@@ -129,25 +150,4 @@ class LErrorHandler extends ErrorHandler
 //			'traces' => $trace,
 		);
 	}
-
-    /**
-     * 致命错误处理
-     */
-	public function handleFatalError()
-    {
-        $error = error_get_last();
-        if (LException::isFatalError($error)) {
-            $exception = new \ErrorException($error['message'], 500, $error['type'], $error['file'], $error['line']);
-            $this->exception = $exception;
-            $this->logException($exception);
-
-            if ($this->discardExistingOutput) {
-                $this->clearOutput();
-            }
-            // need to explicitly flush logs because exit() next will terminate the app immediately
-            Yii::getLogger()->flush(true);
-
-            $this->handleException($exception);
-        }
-    }
 }

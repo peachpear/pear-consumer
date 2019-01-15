@@ -1,7 +1,7 @@
 {
     "name": "peachpear/pear-consumer",
-    "description": "pear for consumer framework",
-    "keywords": ["pear", "consumer", "peachpear"],
+    "description": "pear for rabbit-consumer framework",
+    "keywords": ["pear", "rabbitmq", "consumer", "peachpear"],
     "type": "project",
     "license": "MPL-2.0",
     "authors": [
