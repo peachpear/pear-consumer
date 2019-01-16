@@ -40,6 +40,9 @@ php yii consumer/restart ticket
 
 // ticket延迟队列消费者开始运行
 php yii delay/start ticket
+
+// push_socket队列消费者开始运行
+php yii consumer/start pushSocket
 ```
 
 #### 特别说明

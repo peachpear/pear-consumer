@@ -35,5 +35,10 @@ return array(
             'x_exchange' => 'async',
             'x_routing' => 'ticket'
         ],
+        'CPushSocket' => [
+            'queue' => 'queue_push_socket',
+            'exchange' => 'async',
+            'routing' => 'push_socket'
+        ],
     ],
 );

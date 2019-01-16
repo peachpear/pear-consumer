@@ -16,6 +16,8 @@ $initConfig = [
             "warning" =>  "demo_logs_dev",
             "info" =>  "demo_logs_dev",
         ],
+        "chat_socket" => "dev.chatsocket.demo.com",
+        "chat_port" => 9605,
     ]
 ];
 

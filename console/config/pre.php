@@ -17,6 +17,8 @@ $initConfig = [
             "info" =>  "demo_logs_pre",
             "trace" =>  "demo_logs_pre",
         ],
+        "chat_socket" => "pre.chatsocket.demo.com",
+        "chat_port" => 9605,
     ]
 ];
 list($commonBaseConfig, $commonConfig) = include(__DIR__ . '/../../common/config/pre.php');

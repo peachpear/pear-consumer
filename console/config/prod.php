@@ -17,6 +17,8 @@ $initConfig = [
             "info" =>  "demo_logs",
             "trace" =>  "demo_logs",
         ],
+        "chat_socket" => "chatsocket.demo.com",
+        "chat_port" => 9605,
     ]
 ];
 list($commonBaseConfig, $commonConfig) = include(__DIR__ . '/../../common/config/prod.php');
