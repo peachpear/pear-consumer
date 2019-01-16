@@ -9,6 +9,15 @@ $initConfig = [
                 "xxxx@demo.com"=>"xxxx",
             ],
         ],
+        'mailer' => [
+            'transport' => [
+                'username' => 'pre-demo@demo.com',
+                'password' => 'abc123+_*',
+            ],
+            'messageConfig' => [
+                'from'=>['pre-demo@demo.com'=>'no-reply']
+            ],
+        ],
     ],
     "params"    =>  [
         'elkIndexName' => [
