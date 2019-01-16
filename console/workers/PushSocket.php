@@ -10,6 +10,7 @@ class PushSocket extends BaseWorker
 
     public function __construct()
     {
+        // 实例化websocket客户端
         $this->socket = new WSClient(
             Yii::$app->params['chat_socket'],
             '/',
@@ -26,6 +27,7 @@ class PushSocket extends BaseWorker
     {
         $msg = $envelope->getBody();
 
+        // 向websocket服务器发送数据
         if (!$this->socket->send(WS_FRAME_TEXT, $msg, 1)) {
             echo $this->socket->errstr . "\n";
             die;
