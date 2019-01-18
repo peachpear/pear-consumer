@@ -1,9 +1,9 @@
-# pear-api
+# pear-consumer
 pear让你更畅快地编程。pear-consumer是以pear-api为基础，增加消费者必要服务，重整为支持队列消费服务的项目。
 
 ### 前提准备
 
-必要服务支持：Mysql、Nginx、php-fpm、Redis、Kafka、RabbitMQ
+必要服务支持：php-cli、Redis、Kafka、RabbitMQ、Mysql
 
 可选服务支持：Elasticsearch、Kibana、Jenkins
 
@@ -51,11 +51,6 @@ php yii consumer/start pushSocket
 
 #### 目录结构
 ```
-├── backend
-|   ├── components
-|   ├── config
-|   ├── controllers
-|   └── lib
 ├── common
 │   ├── components
 │   ├── config
@@ -65,10 +60,13 @@ php yii consumer/start pushSocket
 │   ├── misc
 │   ├── models
 │   └── service
-└── console
-    ├── components
-    ├── config
-    └── controllers    
+├── console
+│   ├── components
+│   ├── config
+│   ├── controllers
+│   └── workers    
+└── public
+    └── yii  
 ```
 
 #### 编码规范
