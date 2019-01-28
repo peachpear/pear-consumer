@@ -16,36 +16,32 @@ class LConsoleErrorHandler extends ErrorHandler
     public $sendTo;  // component初始化时会根据config自动赋值，无需init重复赋值
     public $sendCC;
 
-    /**
-     * 渲染异常
-     * @param \Exception $exception
-     */
-    public function renderException($exception)
+    public function handleException( $exception )
     {
-        $this->handleException($exception);
+        $data = $this->formatException( $exception );
+        $this->logException( $exception );
+        // 发邮件
+        if ( YII_DEBUG ) {
+            throw $exception;
+        } else {
+            $this->sendErrorMsg( $data );
+        }
     }
 
-    /**
-     * 错误处理
-     */
     public function handleError($code, $message, $file, $line)
     {
         $exception =  new \ErrorException($message, $code, 1, $file, $line);
-
         $this->logException($exception);
-
         $this->sendErrorMsg($this->formatException($exception));
     }
 
-    /**
-     * 致命错误处理
-     */
     public function handleFatalError()
     {
         $error = error_get_last();
         if (LException::isFatalError($error)) {
             $exception = new \ErrorException($error['message'], 500, $error['type'], $error['file'], $error['line']);
             $this->exception = $exception;
+
 //            $this->logException($exception);
 
             if ($this->discardExistingOutput) {
@@ -53,31 +49,12 @@ class LConsoleErrorHandler extends ErrorHandler
             }
             // need to explicitly flush logs because exit() next will terminate the app immediately
             Yii::getLogger()->flush(true);
-
             $this->handleException($exception);
         }
     }
 
     /**
-     * 异常处理
-     * @param $exception
-     */
-    public function handleException( $exception )
-    {
-        $data = $this->formatException( $exception );
-
-        $this->logException( $exception );
-
-        if ( YII_DEBUG ) {
-            throw $exception;
-        } else {
-            // 发邮件
-            $this->sendErrorMsg( $data );
-        }
-    }
-
-    /**
-     * 格式化异常
+     * 准备邮件中异常/错误的格式
      * @param $exception
      * @return array
      */
@@ -117,7 +94,7 @@ class LConsoleErrorHandler extends ErrorHandler
     }
 
     /**
-     * 发邮件（通过推入队列实现）
+     * 发邮件
      * @param $data
      * @internal param $exception
      */
@@ -132,7 +109,17 @@ class LConsoleErrorHandler extends ErrorHandler
             'title' => "[".ENV.']cli-exception-error',
             'file' => []
         ];
-
         $queue->produce($params, 'async', 'mail');
+    }
+
+    /**
+     * 渲染异常输出
+     * 追踪父类可知，这里并不会用到
+     * @param \Exception $exception
+     */
+    public function renderException($exception)
+    {
+        // 本类上面异常处理、程序退出处理其中一个方法删了，这里可用到
+        $this->handleException($exception);
     }
 }
