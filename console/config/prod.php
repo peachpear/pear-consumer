@@ -20,6 +20,8 @@ $initConfig = [
         ],
     ],
     "params"    =>  [
+        'root' => dirname(__DIR__),
+        'pidfile_root' => '/var/log/rabbitMQ/',
         'elkIndexName' => [
             "error" =>  "error_demo_logs",
             "warning" =>  "demo_logs",
