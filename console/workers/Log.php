@@ -6,7 +6,7 @@ use Yii;
 class Log
 {
     /**
-     * logstash处理
+     * 一般日志信息由Logstash从mq拿信息写入Elasticsearch
      * @param $envelope
      * @param $queue
      */

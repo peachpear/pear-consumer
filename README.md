@@ -1,9 +1,10 @@
 # pear-consumer
 pear让你更畅快地编程。pear-consumer是以pear-api为基础，增加消费者必要服务，重整为支持队列消费服务的项目。
+支持PHP、RabbitMQ、MySQL、Mail、Redis、Kafka、WebSocket。 
 
 ### 前提准备
 
-必要服务支持：php-cli、Redis、Kafka、RabbitMQ、Mysql
+必要服务支持：php-cli、Redis、Kafka、RabbitMQ、MySQL
 
 可选服务支持：Elasticsearch、Kibana、Jenkins
 

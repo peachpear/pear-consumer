@@ -147,11 +147,11 @@ class ConsumerController extends BaseController
 
         $channel = new \AMQPChannel($conn);
 
-        $ex = new \AMQPExchange($channel);
-        $ex->setName($this->bindSetting['exchange']);
-        $ex->setType(AMQP_EX_TYPE_DIRECT);
-        $ex->setFlags(AMQP_DURABLE);
-        $ex->declareExchange();
+//        $ex = new \AMQPExchange($channel);
+//        $ex->setName($this->bindSetting['exchange']);
+//        $ex->setType(AMQP_EX_TYPE_DIRECT);
+//        $ex->setFlags(AMQP_DURABLE);
+//        $ex->declareExchange();
 
         $q = new \AMQPQueue($channel);
         $q->setName($this->bindSetting['queue']);

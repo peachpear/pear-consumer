@@ -3,6 +3,11 @@ namespace common\service;
 
 use Yii;
 
+/**
+ * 邮件发送服务
+ * Class MailService
+ * @package common\service
+ */
 class MailService
 {
     /**

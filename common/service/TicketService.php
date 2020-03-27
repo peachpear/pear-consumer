@@ -20,16 +20,16 @@ class TicketService
      * @param array $data
      * @return bool|mixed
      */
-    public static function callbackRequest( $data = [] )
+    public static function callbackRequest($data = [])
     {
         $postData = [
             "data" => $data,
         ];
-        $postData = self::hashPostFields( $postData );
+        $postData = self::hashPostFields($postData);
 
         $url = self::getUrl('ticketRequset');
 
-        return self::doCurl( $url, $postData );
+        return self::doCurl($url, $postData);
     }
 
     /**
@@ -37,10 +37,10 @@ class TicketService
      * @param $urlType
      * @return string
      */
-    private static function getUrl( $urlType )
+    private static function getUrl($urlType)
     {
         $baseDomain = Yii::$app->params["ticket"]["api_url"];
-        if ( isset(self::$url_route[$urlType]) ) {
+        if (isset(self::$url_route[$urlType])) {
             return $baseDomain .self::$wo_route[$urlType];
         } else {
             return $baseDomain ."/";
@@ -52,13 +52,13 @@ class TicketService
      * @param $postData
      * @return mixed
      */
-    private static function hashPostFields( $postData )
+    private static function hashPostFields($postData)
     {
         $postData["time"] = (string)time();
 
         $api_secret = Yii::$app->params["ticket"]["api_secret"];
 
-        $params_str = json_encode( $postData );
+        $params_str = json_encode($postData);
         $postData["sign"] = hash_hmac('sha256', $params_str, $api_secret);
 
         return $postData;
@@ -75,91 +75,122 @@ class TicketService
     {
         /** @var LComponentCurl $curl */
         $curl = Yii::$app->curl;
-        $curl->setUrl( $url );
+        $curl->setUrl($url);
         $header = ["Content-Type: application/json; charset=utf-8"];
         $rhOption = [
             CURLOPT_HTTPHEADER  =>  $header
         ];
-        $curl->setOptions( $rhOption );
-        $curl->setPostField( json_encode($postData) );
+        $curl->setOptions($rhOption);
+        $curl->setPostField(json_encode($postData));
 
+        global $logId;
+        global $step; $step++;
         $log = [
+            'log_id' => $logId,
             'platform' => self::PLATFORM,
+            'category' => 'ticketService',
+            'level' => 'info',
+            'step' => $step,
+            'time' => date('Y-m-d H:i:s'),
             'msg' => [
-                'type'   => 'request',
-                'url'    => $url,
-                "header" => $header,
-                "body"   => $postData,
+                'type' => 'request',
+                'url' => $url,
+                "header"    => $header,
+                "body"      => $postData,
             ],
         ];
-        Yii::trace($log, LOG_PREFIX .__FUNCTION__);
+        Yii::trace($log, self::LOG_PREFIX .__FUNCTION__);
 
         $info = $curl->execute();
 
+        $step++;
         $log = [
+            'log_id' => $logId,
             'platform' => self::PLATFORM,
+            'category' => 'ticketService',
+            'level' => 'info',
+            'step' => $step,
+            'time' => date('Y-m-d H:i:s'),
             'msg' => [
                 'info' => $info,
             ],
         ];
-        Yii::trace($log, LOG_PREFIX .__FUNCTION__);
+        Yii::trace($log, self::LOG_PREFIX .__FUNCTION__);
 
         if ($info !== false) {
             $rhInfo = json_decode($info, true);
+            // 存在转换json错误，记录json转换错误信息
             if (JSON_ERROR_NONE != json_last_error()) {
-                // 存在转换json错误，记录json转换错误信息
-//                错误有专门的错误处理类
-//                $exception['type'] = 'TicketService.doCurl';
-//                $exception['msg'] = '存在转换json错误';
-//                $exception = json_encode($exception);
-//                 throw new \Exception($exception);
-                // 也可以自己写
+                $step++;
                 $log = [
+                    'log_id' => $logId,
                     'platform' => self::PLATFORM,
+                    'category' => 'ticketService',
+                    'level' => 'error',
+                    'step' => $step,
+                    'time' => date('Y-m-d H:i:s'),
                     'msg' => "msg[json decode fail]",
                 ];
-                Yii::error($log, LOG_PREFIX .__FUNCTION__);
+                Yii::error($log, self::LOG_PREFIX .__FUNCTION__);
 
                 return false;
             }
-            if ( $returnFlag == 1 ) {
+            // 只返回data标签
+            if ($returnFlag == 1) {
+                // 返回成功，直接返回
                 if ($rhInfo["code"] == self::SUCCESS) {
                     return $rhInfo["data"];
-                } else { //错误信息
+
+                    // 返回错误，写入日志
+                } else {
+                    $step++;
                     $log = [
+                        'log_id' => $logId,
                         'platform' => self::PLATFORM,
+                        'category' => 'ticketService',
+                        'level' => 'error',
+                        'step' => $step,
+                        'time' => date('Y-m-d H:i:s'),
                         'msg' => "msg[code is not success]",
                     ];
-                    Yii::error($log, LOG_PREFIX .__FUNCTION__);
+                    Yii::error($log, self::LOG_PREFIX .__FUNCTION__);
 
                     return false;
                 }
+
+                // 返回完整信息
             } else {
                 return $rhInfo;
             }
+
+            // curl请求失败，记录错误信息
         } else {
-            // 记录错误信息
             $info = $curl->getErrorInfo();
 
+            $step++;
             $log = [
+                'log_id' => $logId,
                 'platform' => self::PLATFORM,
+                'category' => 'ticketService',
+                'level' => 'error',
+                'step' => $step,
+                'time' => date('Y-m-d H:i:s'),
                 'msg' => "msg[$info]",
             ];
-            Yii::error($log, LOG_PREFIX .__FUNCTION__);
+            Yii::error($log, self::LOG_PREFIX .__FUNCTION__);
 
             return false;
         }
     }
 
     /**
-     * curl请求
-     * 限制时长
+     * curl请求，限制时长
      * @param $url
      * @param $postData
      * @param int $expire
      * @return bool
      */
-    private static function doCurlWithExpire( $url, $postData, $expire = 3000 )
+    private static function doCurlWithExpire($url, $postData, $expire = 3000)
     {
         /** @var LComponentCurl $curl */
         $curl = Yii::$app->curl;
