@@ -67,6 +67,19 @@ class ConsumerController extends BaseController
         $this->pids = file_exists($this->pidfile)
             ? explode(',', file_get_contents($this->pidfile))
             : null;
+
+//        if(!isset($this->setting['read_timeout'])) {  // 消费状态下，自动断开
+//            $this->setting['read_timeout'] = 5;     // 默认5s超时
+//        }
+//        if(!isset($this->setting['write_timeout'])) {
+//            $this->setting['write_timeout'] = 5;     //默认5s超时
+//        }
+        if (!isset($this->setting['connect_timeout'])) {
+            $this->setting['connect_timeout'] = 5;     // 默认5s超时
+        }
+        if (!isset($this->setting['heartbeat'])) {
+            $this->setting['heartbeat'] = 60 * 5;     // 心跳检查5 * 60s，消息消费过慢时会导致连接断开，延长默认心跳时间，可能不会生效
+        }
     }
 
     /**
